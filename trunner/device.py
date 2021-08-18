@@ -495,15 +495,15 @@ class IMXRT106xRunner(DeviceRunner):
 
         if not self.load(test):
             return
-
+        print("imx6ull runner run end")
         super().run(test)
 
 
 class IMX6ULLRunner(DeviceRunner):
-    """This class provides interface to run test case on IMXRT106x using RaspberryPi.
+    """This class provides interface to run test case on IMX6ULL using RaspberryPi.
        GPIO 17 must be connected to the JTAG_nSRST (j21-15) (using an additional resistor 1,5k)."""
 
-    SDP = 'imx6ull-flash.sdp'
+    SDP = '../phoenix-rtos-hostutils/psu/imx6ull-flash.sdp'
     IMAGE = 'phoenix-armv7a7-imx6ull.img'
 
     def __init__(
@@ -543,10 +543,11 @@ class IMX6ULLRunner(DeviceRunner):
     def flash(self):
         self.boot()
         Psu(script=self.SDP).run()
-        self.boot()
+        # self.boot()
 
     def load(self, test):
         """Loads test ELF into syspage using plo"""
+        # self.boot()
         #test-helloworld is loaded to syspage through editing script in _targets and .sdp script
         return True
 

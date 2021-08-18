@@ -36,14 +36,18 @@ ALL_TARGETS = ['ia32-generic', 'host-pc', 'armv7m7-imxrt106x', 'armv7a7-imx6ull'
 DEFAULT_TARGETS = [target for target in ALL_TARGETS
                    if target not in ('host-pc')]
 
-DEVICE_TARGETS = ['armv7m7-imxrt106x']
+DEVICE_TARGETS = ['armv7m7-imxrt106x', 'armv7a7-imx6ull']
 
 # Port to communicate with hardware board
+<<<<<<< HEAD
 DEVICE_SERIAL = "/dev/serial/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.4:1.1"
 
 # DEVICE_SERIAL USB port address
 DEVICE_SERIAL_USB = "1-1.4"
 
+=======
+DEVICE_SERIAL = "/dev/serial/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.4:1.0-port0"
+>>>>>>> imx6ull runner with test-helloworld works
 
 def rootfs(target: str) -> Path:
     return PHRTOS_PROJECT_DIR / '_fs' / target / 'root'
