@@ -13,7 +13,7 @@ import subprocess
 
 from pexpect.exceptions import TIMEOUT, EOF
 
-from .config import PHRTOS_PROJECT_DIR, DEVICE_SERIAL, DEVICE_SERIAL_USB, rootfs
+from .config import PHRTOS_PROJECT_DIR, DEVICE_SERIAL, DEVICE_SERIAL_IMX6ULL, rootfs
 from .tools.color import Color
 
 
@@ -616,6 +616,6 @@ class RunnerFactory:
         if target == 'armv7m7-imxrt106x':
             return IMXRT106xRunner(DEVICE_SERIAL)
         if target == 'armv7a7-imx6ull':
-            return IMX6ULLRunner(DEVICE_SERIAL)
+            return IMX6ULLRunner(DEVICE_SERIAL_IMX6ULL)
 
         raise ValueError(f"Unknown Runner target: {target}")
