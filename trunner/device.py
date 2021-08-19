@@ -13,7 +13,7 @@ import subprocess
 
 from pexpect.exceptions import TIMEOUT, EOF
 
-from .config import PHRTOS_PROJECT_DIR, DEVICE_SERIAL, DEVICE_SERIAL_USB, rootfs
+from .config import PHRTOS_PROJECT_DIR, DEVICE_SERIAL, DEVICE_SERIAL_IMX6ULL, rootfs
 from .tools.color import Color
 
 
@@ -495,6 +495,68 @@ class IMXRT106xRunner(DeviceRunner):
 
         if not self.load(test):
             return
+        print("imx6ull runner run end")
+        super().run(test)
+
+
+class IMX6ULLRunner(DeviceRunner):
+    """This class provides interface to run test case on IMX6ULL using RaspberryPi.
+       GPIO 17 must be connected to the JTAG_nSRST (j21-15) (using an additional resistor 1,5k)."""
+
+    SDP = '../phoenix-rtos-hostutils/psu/imx6ull-flash.sdp'
+    IMAGE = 'phoenix-armv7a7-imx6ull.img'
+
+    def __init__(
+        self,
+        port
+    ):
+        super().__init__(port)
+        self.reset_gpio = GPIO(17)
+        self.reset_gpio.high()
+        self.boot_gpio = GPIO(4)
+        self.ledr_gpio = GPIO(13)
+        self.ledg_gpio = GPIO(18)
+        self.ledb_gpio = GPIO(12)
+        self.ledb_gpio.high()
+
+    def led(self, color, state="on"):
+        if state == "on" or state == "off":
+            self.ledr_gpio.low()
+            self.ledg_gpio.low()
+            self.ledb_gpio.low()
+        if state == "on":
+            if color == "red":
+                self.ledr_gpio.high()
+            if color == "green":
+                self.ledg_gpio.high()
+            if color == "blue":
+                self.ledb_gpio.high()
+
+    def reset(self):
+        self.reset_gpio.low()
+        time.sleep(0.050)
+        self.reset_gpio.high()
+
+    def boot(self, serial_downloader=False):
+        self.reset()
+
+    def flash(self):
+        self.boot()
+        Psu(script=self.SDP).run()
+        # self.boot()
+
+    def load(self, test):
+        """Loads test ELF into syspage using plo"""
+        # self.boot()
+        #test-helloworld is loaded to syspage through editing script in _targets and .sdp script
+        return True
+
+    def run(self, test):
+        if test.skipped():
+            return
+
+        if not self.load(test):
+            return
 
         super().run(test)
 
@@ -553,5 +615,7 @@ class RunnerFactory:
             return HostRunner()
         if target == 'armv7m7-imxrt106x':
             return IMXRT106xRunner(DEVICE_SERIAL)
+        if target == 'armv7a7-imx6ull':
+            return IMX6ULLRunner(DEVICE_SERIAL_IMX6ULL)
 
         raise ValueError(f"Unknown Runner target: {target}")
