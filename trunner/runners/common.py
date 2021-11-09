@@ -15,16 +15,16 @@ import sys
 import threading
 import time
 
+from abc import ABC, abstractmethod
+from pathlib import Path
+
+import subprocess
 import pexpect
 import pexpect.fdpexpect
 import serial
-import subprocess
-
-from pathlib import Path
 
 from trunner.config import PHRTOS_PROJECT_DIR
 from trunner.tools.color import Color
-
 
 _BOOT_DIR = PHRTOS_PROJECT_DIR / '_boot'
 
@@ -305,24 +305,48 @@ class PloTalker:
         self.plo.send('go!\r\n')
 
 
-class Runner:
+class Runner(ABC):
     """Common interface for test runners"""
 
+    BUSY = 'BUSY'
+    SUCCESS = 'SUCCESS'
+    FAIL = 'FAIL'
+
+    def __init__(self):
+        # Busy status is set from the start to the end of the specified runner's run
+        self.status = Runner.BUSY
+        self.set_status(self.status)
+
+    def set_status(self, status):
+        """Method for sygnalising a current runner status: busy/failed/succeeded"""
+        # for now, not used in all target runners
+        self.status = status
+
+    @abstractmethod
     def flash(self):
         """Method used for flashing a device with the image containing tests."""
         pass
 
+    @abstractmethod
     def run(self, test):
         """Method used for running a single test case which is represented by TestCase class."""
         pass
 
 
 class DeviceRunner(Runner):
-    """This class provides interface to run test case using serial port"""
+    """This class provides interface to run tests on hardware targets using serial port"""
 
     def __init__(self, port):
+        super().__init__()
         self.port = port
         self.serial = None
+
+    def set_status(self, status):
+        super().set_status(status)
+
+    @abstractmethod
+    def flash(self):
+        pass
 
     def run(self, test):
         if test.skipped():
@@ -346,13 +370,16 @@ class DeviceRunner(Runner):
 class GPIO:
     """Wrapper around the RPi.GPIO module. It represents a single OUT pin"""
 
-    def __init__(self, pin):
+    def __init__(self, pin, init=0):
         self.pin = pin
         self.gpio = importlib.import_module('RPi.GPIO')
 
         self.gpio.setmode(self.gpio.BCM)
         self.gpio.setwarnings(False)
-        self.gpio.setup(self.pin, self.gpio.OUT, initial=self.gpio.LOW)
+        if init == 0:
+            self.gpio.setup(self.pin, self.gpio.OUT, initial=self.gpio.LOW)
+        elif init == 1:
+            self.gpio.setup(self.pin, self.gpio.OUT, initial=self.gpio.HIGH)
 
     def high(self):
         self.gpio.output(self.pin, self.gpio.HIGH)
