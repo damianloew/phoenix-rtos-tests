@@ -1,0 +1,9 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/home/dloew/rack_units/rack_unit_imxrt1176_nilee/test-ci/phoenix-rtos-tests'
+make: Nothing to be done for 'all'.
+make: Leaving directory '/home/dloew/rack_units/rack_unit_imxrt1176_nilee/test-ci/phoenix-rtos-tests'
+ 
+Makefile:9: ../phoenix-rtos-build/Makefile.common: No such file or directory
+make: *** No rule to make target '../phoenix-rtos-build/Makefile.common'.
+make: Failed to remake makefile '../phoenix-rtos-build/Makefile.common'.
+ 

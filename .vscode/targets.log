@@ -1,0 +1,465 @@
+make all --print-data-base --no-builtin-variables --no-builtin-rules --question
+Makefile:9: ../phoenix-rtos-build/Makefile.common: No such file or directory
+make: *** No rule to make target '../phoenix-rtos-build/Makefile.common'.  Stop.
+ 
+# GNU Make 4.2.1
+# Built for x86_64-pc-linux-gnu
+# Copyright (C) 1988-2016 Free Software Foundation, Inc.
+# License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+# This is free software: you are free to change and redistribute it.
+# There is NO WARRANTY, to the extent permitted by law.
+
+# Make data base, printed on Wed Dec  1 14:27:33 2021
+
+# Variables
+
+# 'override' directive
+GNUMAKEFLAGS := 
+# automatic
+<D = $(patsubst %/,%,$(dir $<))
+# automatic
+?F = $(notdir $?)
+# environment
+DESKTOP_SESSION = ubuntu
+# default
+.SHELLFLAGS := -c
+# environment
+XDG_SESSION_CLASS = user
+# environment
+XDG_SESSION_TYPE = x11
+# environment
+VSCODE_LOG_NATIVE = false
+# automatic
+?D = $(patsubst %/,%,$(dir $?))
+# environment
+IM_CONFIG_PHASE = 1
+# makefile (from 'initfini/Makefile', line 2)
+LOCAL_SRCS := main.c
+# automatic
+@D = $(patsubst %/,%,$(dir $@))
+# environment
+XAUTHORITY = /run/user/1000/gdm/Xauthority
+# environment
+GDMSESSION = ubuntu
+# environment
+XMODIFIERS = @im=ibus
+# makefile
+CURDIR := /home/dloew/rack_units/rack_unit_imxrt1176_nilee/test-ci/phoenix-rtos-tests
+# makefile
+SHELL = /bin/sh
+# environment
+VSCODE_NLS_CONFIG = {"locale":"en-us","availableLanguages":{},"_languagePackSupport":true}
+# environment
+_ = /usr/bin/dbus-update-activation-environment
+# environment
+JOURNAL_STREAM = 8:61562
+# environment
+XDG_CONFIG_DIRS = /etc/xdg/xdg-ubuntu:/etc/xdg
+# makefile (from 'Makefile', line 22)
+ALL_MAKES := ./sample/test/Makefile ./sample/test/fails/Makefile ./sample/helloworld/Makefile ./setjmp/Makefile ./fs/Makefile ./unity/Makefile ./meterfs/Makefile ./mem/Makefile ./stdio/Makefile ./libc/Makefile ./libc/harness/Makefile ./gfx/Makefile ./proc/Makefile ./disk/Makefile ./initfini/Makefile ./virtio/Makefile
+# makefile (from 'virtio/Makefile', line 1)
+MAKEFILE_LIST :=  Makefile sample/test/Makefile sample/test/fails/Makefile sample/helloworld/Makefile setjmp/Makefile fs/Makefile unity/Makefile meterfs/Makefile mem/Makefile stdio/Makefile libc/Makefile libc/harness/Makefile gfx/Makefile proc/Makefile disk/Makefile initfini/Makefile virtio/Makefile
+# automatic
+@F = $(notdir $@)
+# environment
+GIO_LAUNCHED_DESKTOP_FILE = /usr/share/applications/code.desktop
+# environment
+USERNAME = dloew
+# environment
+MAKELEVEL := 0
+# environment
+XDG_DATA_DIRS = /usr/share/ubuntu:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop
+# environment
+DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/1000/bus,guid=2a196de5c7596dae134921d461a72f00
+# environment
+VSCODE_VERBOSE_LOGGING = true
+# environment
+MANAGERPID = 2297
+# environment
+LESSOPEN = | /usr/bin/lesspipe %s
+# environment
+LC_NAME = pl_PL.UTF-8
+# environment
+VSCODE_CWD = /home/dloew
+# default
+MAKE_HOST := x86_64-pc-linux-gnu
+# environment
+PATH = /home/dloew/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+# environment
+GPG_AGENT_INFO = /run/user/1000/gnupg/S.gpg-agent:0:1
+# environment
+SESSION_MANAGER = local/dloew-HP:@/tmp/.ICE-unix/2552,unix/dloew-HP:/tmp/.ICE-unix/2552
+# environment
+XDG_RUNTIME_DIR = /run/user/1000
+# makefile (from 'meterfs/Makefile', line 14)
+TEST_LIBS := 
+# makefile (from 'sample/helloworld/Makefile', line 5)
+SAMPLE_TESTS = test-echo test-unity test-fail-output-1 test-fail-output-2 test-fail-exception test-fail-unity test-fail-unity-exc test-helloworld
+# environment
+XDG_MENU_PREFIX = gnome-
+# environment
+VSCODE_LOG_STACK = false
+# environment
+VSCODE_CRASH_REPORTER_START_OPTIONS = {"companyName":"Microsoft","productName":"VSCode","submitURL":"appcenter://code?aid=fba07a4d-84bd-4fc8-a125-9640fc8ce171&uid=dbb8ea7f-ce9f-47fe-a178-b235863959ac&iid=dbb8ea7f-ce9f-47fe-a178-b235863959ac&sid=dbb8ea7f-ce9f-47fe-a178-b235863959ac","uploadToServer":true}
+# environment
+INVOCATION_ID = 97c39140c6174b8e8ab42a119f38b08d
+# default
+.FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
+# environment
+LS_COLORS = 
+# environment
+XDG_SESSION_DESKTOP = ubuntu
+# environment
+SSH_AUTH_SOCK = /run/user/1000/keyring/ssh
+# environment
+GIO_LAUNCHED_DESKTOP_FILE_PID = 20658
+# automatic
+%F = $(notdir $%)
+# environment
+DISPLAY = :0
+# environment
+VSCODE_PIPE_LOGGING = true
+# environment
+PWD = /home/dloew/rack_units/rack_unit_imxrt1176_nilee/test-ci/phoenix-rtos-tests
+# default
+.LOADED := 
+# environment
+SSH_AGENT_PID = 2492
+# environment
+ORIGINAL_XDG_CURRENT_DESKTOP = ubuntu:GNOME
+# environment
+GTK_MODULES = gail:atk-bridge
+# environment
+VSCODE_AMD_ENTRYPOINT = vs/workbench/services/extensions/node/extensionHostProcess
+# environment
+HOME = /home/dloew
+# environment
+LESSCLOSE = /usr/bin/lesspipe %s %s
+# makefile (from 'Makefile', line 14)
+add_unity_test = $(call add_test,$(1),$(2),unity)
+# environment
+VSCODE_CODE_CACHE_PATH = /home/dloew/.config/Code/CachedData/ee8c7def80afc00dd6e593ef12f37756d8f504ea
+# environment
+LOGNAME = dloew
+# environment
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
+# automatic
++F = $(notdir $+)
+# makefile (from 'unity/Makefile', line 4)
+HEADERS := test_common.h
+# environment
+VSCODE_HANDLES_UNCAUGHT_ERRORS = true
+# environment
+GNOME_DESKTOP_SESSION_ID = this-is-deprecated
+# automatic
+^D = $(patsubst %/,%,$(dir $^))
+# environment
+LC_TIME = pl_PL.UTF-8
+# default
+MAKE = $(MAKE_COMMAND)
+# default
+MAKECMDGOALS := all
+# environment
+QT_IM_MODULE = ibus
+# makefile (from 'libc/harness/Makefile', line 3)
+SRCS := 
+# environment
+SHLVL = 0
+# makefile (from 'unity/Makefile', line 5)
+LOCAL_CFLAGS := -Iunity
+# makefile (from 'libc/harness/Makefile', line 1)
+LOCAL_DIR := 
+# environment
+GNOME_SHELL_SESSION_MODE = ubuntu
+# environment
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-df2e7913-9a05-4c37-9762-227677a0ef79.sock
+# default
+MAKE_VERSION := 4.2.1
+# environment
+USER = dloew
+# environment
+LC_MONETARY = pl_PL.UTF-8
+# makefile (from 'Makefile', line 11)
+.DEFAULT_GOAL := all
+# environment
+XDG_CURRENT_DESKTOP = Unity
+# environment
+LIBVIRT_DEFAULT_URI = qemu:///system
+# automatic
+%D = $(patsubst %/,%,$(dir $%))
+# environment
+LC_TELEPHONE = pl_PL.UTF-8
+# default
+MAKE_COMMAND := make
+# default
+.VARIABLES := 
+# automatic
+*F = $(notdir $*)
+# makefile (from 'Makefile', line 19)
+DEFAULT_INSTALL_PATH := /bin
+# environment
+VSCODE_IPC_HOOK = /run/user/1000/vscode-60956943-1.61.0-main.sock
+# makefile
+MAKEFLAGS = prR
+# environment
+MFLAGS = -prR
+# automatic
+*D = $(patsubst %/,%,$(dir $*))
+# environment
+BREAKPAD_DUMP_LOCATION = /home/dloew/.config/Code/exthost Crash Reports
+# automatic
++D = $(patsubst %/,%,$(dir $+))
+# environment
+GDK_BACKEND = x11
+# environment
+LC_PAPER = pl_PL.UTF-8
+# environment
+NO_AT_BRIDGE = 1
+# environment
+QT_ACCESSIBILITY = 1
+# makefile (from 'libc/Makefile', line 4)
+DEP_LIBS := unity
+# 'override' directive
+.SHELLSTATUS := 0
+# default
+MAKEFILES := 
+# makefile (from 'meterfs/Makefile', line 24)
+add_meterfs_test = $(call add_test,$(1),$$(TEST_LIBS),unity test_meterfs_common)
+# environment
+LC_NUMERIC = pl_PL.UTF-8
+# automatic
+<F = $(notdir $<)
+# environment
+ELECTRON_RUN_AS_NODE = 1
+# environment
+LC_MEASUREMENT = pl_PL.UTF-8
+# environment
+LC_ALL = C
+# environment
+DBUS_STARTER_BUS_TYPE = session
+# automatic
+^F = $(notdir $^)
+# makefile (from 'meterfs/Makefile', line 12)
+DEPS := unity
+# default
+SUFFIXES := 
+# environment
+CHROME_DESKTOP = code-url-handler.desktop
+# environment
+WINDOWPATH = 2
+# default
+.INCLUDE_DIRS = /usr/include /usr/local/include /usr/include
+# makefile (from 'Makefile', line 28)
+DEFAULT_COMPONENTS := 
+# environment
+LC_IDENTIFICATION = pl_PL.UTF-8
+# makefile (from 'initfini/Makefile', line 1)
+NAME := test-initfini
+# default
+.RECIPEPREFIX := 
+# environment
+LC_ADDRESS = pl_PL.UTF-8
+# environment
+LANG = C
+# environment
+VSCODE_PID = 10901
+# environment
+DBUS_STARTER_ADDRESS = unix:path=/run/user/1000/bus,guid=2a196de5c7596dae134921d461a72f00
+# variable set hash-table stats:
+# Load=126/1024=12%, Rehash=0, Collisions=49/272=18%
+
+# Pattern-specific Variable Values
+
+# No pattern-specific variable values.
+
+# Directories
+
+# . (device 66309, inode 4293880): 32 files, no impossibilities.
+
+# 32 files, no impossibilities in 1 directories.
+
+# Implicit Rules
+
+# No implicit rules.
+
+# Files
+
+# Not a target:
+fs/Makefile:
+#  Implicit rule search has been done.
+ 
+#  Last modified 2021-12-01 14:27:15.788629653
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+disk/Makefile:
+#  Implicit rule search has been done.
+#  Last modified 2021-12-01 14:27:15.788629653
+#  File has been updated.
+#  Successfully updated.
+
+all:
+#  Phony target (prerequisite of .PHONY).
+#  Command line target.
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+.PHONY: all install clean
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+initfini/Makefile:
+#  Implicit rule search has been done.
+#  Last modified 2021-12-01 14:27:15.800629791
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+meterfs/Makefile:
+#  Implicit rule search has been done.
+#  Last modified 2021-12-01 14:27:15.800629791
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+gfx/Makefile:
+#  Implicit rule search has been done.
+#  Last modified 2021-12-01 14:27:15.788629653
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+Makefile.:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Failed to be updated.
+
+# Not a target:
+Makefile:
+#  Implicit rule search has not been done.
+#  Last modified 2021-12-01 14:27:15.788629653
+#  File has not been updated.
+
+# Not a target:
+sample/test/fails/Makefile:
+#  Implicit rule search has been done.
+#  Last modified 2021-12-01 14:27:15.800629791
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+libc/Makefile:
+#  Implicit rule search has been done.
+#  Last modified 2021-12-01 14:27:15.800629791
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+virtio/Makefile:
+#  Implicit rule search has been done.
+#  Last modified 2021-12-01 14:27:15.804629837
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+setjmp/Makefile:
+#  Implicit rule search has been done.
+#  Last modified 2021-12-01 14:27:15.800629791
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+proc/Makefile:
+#  Implicit rule search has been done.
+#  Last modified 2021-12-01 14:27:15.800629791
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+.DEFAULT:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+../phoenix-rtos-build/Makefile.common:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has not been updated.
+
+clean:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+# Not a target:
+mem/Makefile:
+#  Implicit rule search has been done.
+#  Last modified 2021-12-01 14:27:15.800629791
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+stdio/Makefile:
+#  Implicit rule search has been done.
+#  Last modified 2021-12-01 14:27:15.804629837
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+libc/harness/Makefile:
+#  Implicit rule search has been done.
+#  Last modified 2021-12-01 14:27:15.800629791
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+unity/Makefile:
+#  Implicit rule search has been done.
+#  Last modified 2021-12-01 14:27:15.804629837
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+sample/test/Makefile:
+#  Implicit rule search has been done.
+#  Last modified 2021-12-01 14:27:15.800629791
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+sample/helloworld/Makefile:
+#  Implicit rule search has been done.
+#  Last modified 2021-12-01 14:27:15.800629791
+#  File has been updated.
+#  Successfully updated.
+
+install:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+# files hash-table stats:
+# Load=25/1024=2%, Rehash=0, Collisions=0/59=0%
+# VPATH Search Paths
+
+# No 'vpath' search paths.
+
+# No general ('VPATH' variable) search path.
+
+# strcache buffers: 1 (0) / strings = 58 / storage = 648 B / avg = 11 B
+# current buf: size = 8162 B / used = 648 B / count = 58 / avg = 11 B
+
+# strcache performance: lookups = 88 / hit rate = 34%
+# hash-table stats:
+# Load=58/8192=1%, Rehash=0, Collisions=1/88=1%
+# Finished Make data base on Wed Dec  1 14:27:33 2021
+
+ 
