@@ -11,17 +11,48 @@ on:
     branches:
       - master
       - 'feature/*'
+# echo $(curl https://raw.githubusercontent.com/damianloew/file/master/hw_targets.json)
+# echo "::set-output name=hw_targets::$(curl https://raw.githubusercontent.com/damianloew/file/master/hw_targets.json)"
+# ${content//'%'/'%25'}
+#           echo "${{ env.target }}"
 
 # jobs
 jobs:
+  # get hw_targets file
+  provide_packages_json:
+    env:
+      HW_TARGET: T
+    # id: job_1
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get hardware targets
+        id: get_hw_targets
+        run: |
+          git clone https://github.com/damianloew/file.git
+          cd file
+          cat hw_targets.json
+          content=$(curl https://raw.githubusercontent.com/damianloew/file/master/hw_targets.json)
+          echo "conteeent"
+          echo "${content}"
+          echo "end"
+          echo "::set-output name=matrix::$(curl https://raw.githubusercontent.com/damianloew/file/master/hw_targets.json)"
+          echo ----
+          echo ${{ steps.get_hw_targets.outputs.matrix }}
+      - name: use the value
+        id: step_2
+        run: |
+          echo "The selected color is ${{ steps.get_hw_targets.outputs.matrix }}"
+    outputs:
+      matrix: ${{ steps.get_hw_targets.outputs.matrix }} #${{ env.target }} #${{ steps.get_hw_targets.outputs.hw_targets }}
   build:
     name: build image
+    needs: provide_packages_json
     runs-on: ubuntu-latest
     outputs:
-      build_result: ${{ steps.build.outcome }}
+      build_result: ${{ env.action_state }}
     strategy:
       matrix:
-        target: ['armv7a7-imx6ull', 'armv7a9-zynq7000', 'armv7m7-imxrt106x', 'armv7m7-imxrt117x', 'armv7m4-stm32l4x6', 'host-pc', 'ia32-generic', 'riscv64-spike', 'riscv64-virt']
+        target: ${{ fromJson(needs.provide_packages_json.outputs.matrix) }} #['ia32-generic']
         include:
           - target: 'ia32-generic'
             syspage: 'psh pc-ata uart16550'
@@ -32,6 +63,12 @@ jobs:
         with:
           repository: phoenix-rtos/phoenix-rtos-project
           submodules: recursive
+      - name: print target
+        run: |
+          echo "target"
+          echo ${{ needs.provide_packages_json.outputs.matrix }}
+          echo "target from json"
+          echo ${{ fromJson(needs.provide_packages_json.outputs.matrix) }}
 
       # step 2: update the submodule (recurse-sumbodules=no is needed for phoenix-rtos-lwip checkout not to fail, but it fails to update the submodule (TODO)
       - name: Update submodule ${{ github.event.repository.name }}
@@ -71,105 +108,105 @@ jobs:
             _boot
             rootfs-${{ matrix.target }}.tar
 
-  test-emu:
-    needs: build
-    name: run tests on emulators
-    runs-on: ubuntu-latest
-    outputs:
-      runner_result: ${{ steps.runner.outcome }}
-    strategy:
-      matrix:
-        target: ['host-pc', 'ia32-generic']
+  # test-emu:
+  #   needs: build
+  #   name: run tests on emulators
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     runner_result: ${{ steps.runner.outcome }}
+  #   strategy:
+  #     matrix:
+  #       target: ['host-pc', 'ia32-generic']
 
-    steps:
-      - name: Checkout phoenix-rtos-project
-        uses: actions/checkout@v2
-        with:
-          repository: phoenix-rtos/phoenix-rtos-project
-          submodules: recursive
+  #   steps:
+  #     - name: Checkout phoenix-rtos-project
+  #       uses: actions/checkout@v2
+  #       with:
+  #         repository: phoenix-rtos/phoenix-rtos-project
+  #         submodules: recursive
 
-      - name: Update submodule ${{ github.event.repository.name }}
-        working-directory: ${{ github.event.repository.name }}
-        run: |
-          git fetch --recurse-submodules=no --force ${{ github.event.repository.clone_url }} "+refs/heads/*:refs/remotes/origin/*"
-          git fetch --recurse-submodules=no --force ${{ github.event.repository.clone_url }} "+refs/pull/*/head:refs/remotes/origin/pr/*"
-          git checkout ${{ github.sha }} || git checkout ${{ github.event.pull_request.head.sha }}
+  #     - name: Update submodule ${{ github.event.repository.name }}
+  #       working-directory: ${{ github.event.repository.name }}
+  #       run: |
+  #         git fetch --recurse-submodules=no --force ${{ github.event.repository.clone_url }} "+refs/heads/*:refs/remotes/origin/*"
+  #         git fetch --recurse-submodules=no --force ${{ github.event.repository.clone_url }} "+refs/pull/*/head:refs/remotes/origin/pr/*"
+  #         git checkout ${{ github.sha }} || git checkout ${{ github.event.pull_request.head.sha }}
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: phoenix-rtos-${{ matrix.target }}
+  #     - name: Download build artifacts
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: phoenix-rtos-${{ matrix.target }}
 
-      - name: Untar rootfs
-        working-directory: _fs
-        run: tar -xvf ../rootfs-${{ matrix.target }}.tar
+  #     - name: Untar rootfs
+  #       working-directory: _fs
+  #       run: tar -xvf ../rootfs-${{ matrix.target }}.tar
 
-      - name: Test runner
-        id: runner
-        uses: ./.github/actions/phoenix-runner
-        with:
-          target: ${{ matrix.target }}
+  #     - name: Test runner
+  #       id: runner
+  #       uses: ./.github/actions/phoenix-runner
+  #       with:
+  #         target: ${{ matrix.target }}
 
-  test-hw:
-    needs: build
-    name: run tests on hardware
-    runs-on: ${{ matrix.target }}
-    outputs:
-      runner_result: ${{ steps.runner.outcome }}
-    strategy:
-      matrix:
-        target: ['armv7m7-imxrt117x']
+  # test-hw:
+  #   needs: build
+  #   name: run tests on hardware
+  #   runs-on: ${{ matrix.target }}
+  #   outputs:
+  #     runner_result: ${{ steps.runner.outcome }}
+  #   strategy:
+  #     matrix:
+  #       target: ['armv7m7-imxrt106x']
 
-    steps:
-      - name: Checkout phoenix-rtos-project
-        uses: actions/checkout@v2
-        with:
-          repository: phoenix-rtos/phoenix-rtos-project
-          submodules: recursive
+  #   steps:
+  #     - name: Checkout phoenix-rtos-project
+  #       uses: actions/checkout@v2
+  #       with:
+  #         repository: phoenix-rtos/phoenix-rtos-project
+  #         submodules: recursive
 
-      - name: Update submodule ${{ github.event.repository.name }}
-        working-directory: ${{ github.event.repository.name }}
-        run: |
-          git fetch --recurse-submodules=no --force ${{ github.event.repository.clone_url }} "+refs/heads/*:refs/remotes/origin/*"
-          git fetch --recurse-submodules=no --force ${{ github.event.repository.clone_url }} "+refs/pull/*/head:refs/remotes/origin/pr/*"
-          git checkout ${{ github.sha }} || git checkout ${{ github.event.pull_request.head.sha }}
+  #     - name: Update submodule ${{ github.event.repository.name }}
+  #       working-directory: ${{ github.event.repository.name }}
+  #       run: |
+  #         git fetch --recurse-submodules=no --force ${{ github.event.repository.clone_url }} "+refs/heads/*:refs/remotes/origin/*"
+  #         git fetch --recurse-submodules=no --force ${{ github.event.repository.clone_url }} "+refs/pull/*/head:refs/remotes/origin/pr/*"
+  #         git checkout ${{ github.sha }} || git checkout ${{ github.event.pull_request.head.sha }}
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: phoenix-rtos-${{ matrix.target }}
+  #     - name: Download build artifacts
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: phoenix-rtos-${{ matrix.target }}
 
-      - name: Untar rootfs
-        working-directory: _fs
-        run: tar -xvf ../rootfs-${{ matrix.target }}.tar
+  #     - name: Untar rootfs
+  #       working-directory: _fs
+  #       run: tar -xvf ../rootfs-${{ matrix.target }}.tar
 
-      - name: Test runner
-        id: runner
-        run: |
-          python3 ./phoenix-rtos-tests/runner.py -T${{ matrix.target }}
+  #     - name: Test runner
+  #       id: runner
+  #       run: |
+  #         python3 ./phoenix-rtos-tests/runner.py -T${{ matrix.target }}
 
-  mail-notification:
-    if: ${{ failure() }}
-    needs: ['build', 'test-emu', 'test-hw']
-    name: notify ci team using e-mail
-    runs-on: ubuntu-latest
-    steps:
-      - name: Send mail
-        # If there is some failure, not caused by build step or test runner step send mail
-        if: >-
-          ${{ needs.build.outputs.build_result != 'failure'
-          && needs.test-emu.outputs.runner_result != 'failure'
-          && needs.test-hw.outputs.runner_result != 'failure' }}
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: smtp.gmail.com
-          server_port: 465
-          username: ${{ secrets.CI_BOT_EMAIL_USERNAME }}
-          password: ${{ secrets.CI_BOT_EMAIL_PASSWORD }}
-          subject: Github Actions Warning
-          to: ci@phoenix-rtos.com
-          # Required sender full name (address can be skipped):
-          from: Continuous Integration Bot
-          # Optional whether this connection use TLS (default is true if server_port is 465)
-          secure: true
-          body: There is some problem with GH Actions. https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}
+  # mail-notification:
+  #   if: ${{ failure() }}
+  #   needs: ['build', 'test-emu', 'test-hw']
+  #   name: notify ci team using e-mail
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Send mail
+  #       # If there is some failure, not caused by build step or test runner step send mail
+  #       if: >-
+  #         ${{ needs.build.outputs.build_result != 'failure'
+  #         && needs.test-emu.outputs.runner_result != 'failure'
+  #         && needs.test-hw.outputs.runner_result != 'failure' }}
+  #       uses: dawidd6/action-send-mail@v3
+  #       with:
+  #         server_address: smtp.gmail.com
+  #         server_port: 465
+  #         username: ${{ secrets.CI_BOT_EMAIL_USERNAME }}
+  #         password: ${{ secrets.CI_BOT_EMAIL_PASSWORD }}
+  #         subject: Github Actions Warning
+  #         to: ci@phoenix-rtos.com
+  #         # Required sender full name (address can be skipped):
+  #         from: Continuous Integration Bot
+  #         # Optional whether this connection use TLS (default is true if server_port is 465)
+  #         secure: true
+  #         body: There is some problem with GH Actions. https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}
