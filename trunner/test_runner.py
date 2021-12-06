@@ -4,6 +4,7 @@ from .builder import TargetBuilder
 from .config import TestCaseConfig, ParserArgs
 from .device import RunnerFactory
 from .testcase import TestCaseFactory
+from .runners.common import Runner
 
 
 class TestsRunner:
@@ -55,6 +56,7 @@ class TestsRunner:
                 runner.flash()
 
         for target, tests in self.tests_per_target.items():
+            # self.runners[target].set_status(Runner.BUSY)
             for test_case in tests:
                 test_case.log_test_started()
                 self.runners[target].run(test_case)
@@ -67,5 +69,10 @@ class TestsRunner:
                 passed += int(test.passed())
                 failed += int(test.failed())
                 skipped += int(test.skipped())
+
+            if failed > 0:
+                self.runners[target].set_status(Runner.FAIL)
+            else:
+                self.runners[target].set_status(Runner.SUCCESS)
 
         return passed, failed, skipped
