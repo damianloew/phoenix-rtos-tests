@@ -27,6 +27,7 @@ class TestCase:
         timeout,
         psh=True,
         exec_cmd=None,
+        syspage_prog=None,
         use_sysexec=False,
         status=None
     ):
@@ -34,6 +35,7 @@ class TestCase:
         self.target = target
         self.timeout = timeout
         self.exec_cmd = exec_cmd
+        self.syspage_prog = syspage_prog
         self.psh = psh
         self.use_sysexec = use_sysexec
         if not status:
@@ -190,10 +192,11 @@ class TestCaseCustomHarness(TestCase):
         harness_path,
         psh=True,
         exec_cmd=None,
+        syspage_prog=None,
         use_sysexec=False,
         status=TestCase.FAILED
     ):
-        super().__init__(name, target, timeout, psh, exec_cmd, use_sysexec, status)
+        super().__init__(name, target, timeout, psh, exec_cmd, syspage_prog, use_sysexec, status)
         self.load_module(harness_path)
 
     def load_module(self, path):
@@ -216,11 +219,12 @@ class TestCaseUnit(TestCase):
         target,
         timeout,
         exec_cmd,
+        syspage_prog=None,
         psh=True,
         use_sysexec=False,
         status=TestCase.FAILED
     ):
-        super().__init__(name, target, timeout, psh, exec_cmd, use_sysexec, status)
+        super().__init__(name, target, timeout, psh, exec_cmd, syspage_prog, use_sysexec, status)
         self.harness = UnitTestHarness.harness
         self.unit_test_results = []
 
@@ -254,7 +258,6 @@ class TestCaseFactory:
     def create(test):
         status = TestCase.SKIPPED if test['ignore'] else TestCase.FAILED
         use_sysexec = test['target'] in DEVICE_TARGETS
-
         if test['type'] == 'unit':
             return TestCaseUnit(
                 name=test['name'],
@@ -262,6 +265,7 @@ class TestCaseFactory:
                 timeout=test['timeout'],
                 psh=test['psh'],
                 exec_cmd=test.get('exec'),
+                syspage_prog=test.get('syspage'),
                 use_sysexec=use_sysexec,
                 status=status
             )
@@ -273,6 +277,7 @@ class TestCaseFactory:
                 psh=test['psh'],
                 harness_path=test['harness'],
                 exec_cmd=test.get('exec'),
+                syspage_prog=test.get('syspage'),
                 use_sysexec=use_sysexec,
                 status=status
             )
