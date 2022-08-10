@@ -218,7 +218,6 @@ class Phoenixd(BackgroundProcessHandler):
         self,
         target,
         port,
-        baudrate=460800,
         dir='.',
         cwd=None,
     ):
@@ -262,7 +261,6 @@ class Phoenixd(BackgroundProcessHandler):
         self.proc = pexpect.spawn(
             'phoenixd',
             ['-p', self.port,
-             '-b', str(self.baudrate),
              '-s', self.dir],
             cwd=self.cwd,
             encoding='ascii'
