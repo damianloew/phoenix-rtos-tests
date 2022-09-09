@@ -1,7 +1,7 @@
 #
 # Phoenix-RTOS test runner
 #
-# Wrappers for programs used by Test Runner
+# Handlers for utilities used by Test Runner
 #
 # Copyright 2021, 2022 Phoenix Systems
 # Authors: Jakub Sarzyński, Mateusz Niewiadomski, Damian Loewnau
@@ -58,8 +58,8 @@ class PhoenixdError(Exception):
         super().__init__(msg)
 
 
-class StandardWrapper(ABC):
-    """Wrapper for the specific program"""
+class ProcessHandler(ABC):
+    """Handler for the specific process"""
 
     def __init__(self, target, progname, args, cwd=None):
         if cwd is None:
@@ -80,8 +80,8 @@ class StandardWrapper(ABC):
         pass
 
 
-class BackgroundWrapper(ABC):
-    """ Wrapper for the specific program intended to run in background"""
+class BackgroundProcessHandler(ABC):
+    """ Handler for the specific process intended to run in background"""
 
     def __init__(
         self
@@ -120,8 +120,8 @@ class BackgroundWrapper(ABC):
         self.kill()
 
 
-class Psu(StandardWrapper):
-    """Wrapper for psu program"""
+class Psu(ProcessHandler):
+    """Handler for psu process"""
 
     def __init__(self, target, script, cwd=None):
         super().__init__(target, 'psu', [f'{script}'], cwd)
@@ -155,8 +155,8 @@ class Psu(StandardWrapper):
             raise PsuError(' Loading plo using psu failed, psu exit status was not equal 0!')
 
 
-class Gdb(StandardWrapper):
-    """Wrapper for gdb-multiarch program"""
+class Gdb(ProcessHandler):
+    """Handler for gdb-multiarch process"""
 
     def __init__(self, target, file, script, cwd=None):
         args = [f'{file}', '-x', f'{script}']
@@ -211,8 +211,8 @@ class Gdb(StandardWrapper):
             raise GdbError('Loading plo using gdb failed, gdb exit status was not equal 0!')
 
 
-class Phoenixd(BackgroundWrapper):
-    """ Wrapper for phoenixd program"""
+class Phoenixd(BackgroundProcessHandler):
+    """ Handler for phoenixd process"""
 
     def __init__(
         self,
@@ -226,7 +226,6 @@ class Phoenixd(BackgroundWrapper):
             cwd = boot_dir(target)
         self.cwd = cwd
         self.port = port
-        self.baudrate = baudrate
         self.dir = dir
         self.dispatcher_event = None
         super().__init__()
@@ -293,8 +292,8 @@ class Phoenixd(BackgroundWrapper):
         self.kill()
 
 
-class GdbServer(BackgroundWrapper):
-    """ Wrapper for JlinkGdbServer program"""
+class GdbServer(BackgroundProcessHandler):
+    """ Handler for JlinkGdbServer process"""
 
     def __init__(
         self,
