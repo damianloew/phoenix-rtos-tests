@@ -70,6 +70,7 @@ class ZYNQ7000JtagFlasher(Flasher):
         super().__init__(target, serial_port, phoenixd_port, flash_bank, logpath)
 
     def upload_plo(self, plo):
+        print(f'gdb script = {self.GDB_SCRIPT}')
         Gdb(self.target, self.PLO_FILE, script=self.GDB_SCRIPT).run()
 
         plo.interrupt_counting()
