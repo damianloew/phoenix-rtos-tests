@@ -1,7 +1,191 @@
-# vim:sw=2:ts=2
-name: ci
+# name: ci
 
-# on events
+# # on events
+# on:
+#   push:
+#     branches:
+#       - master
+#       - 'feature/*'
+#   pull_request:
+#     branches:
+#       - master
+#       - 'feature/*'
+
+# jobs:
+#   build:
+#     name: build image
+#     runs-on: ubuntu-latest
+#     outputs:
+#       build_result: ${{ steps.build.outcome }}
+#     strategy:
+#       matrix:
+#         target: ['armv7a9-zynq7000-zedboard', 'ia32-generic-qemu']
+#         include:
+#           - target: 'ia32-generic-qemu'
+#             syspage: 'psh pc-ata uart16550'
+#     steps:
+#       # step 1: checkout phoenix-rtos-project repository code inside the workspace directory of the runner
+#       - name: Checkout phoenix-rtos-project
+#         uses: actions/checkout@v2
+#         with:
+#           repository: phoenix-rtos/phoenix-rtos-project
+#           submodules: recursive
+
+#       # step 2: update the submodule (recurse-sumbodules=no is needed for phoenix-rtos-lwip checkout not to fail, but it fails to update the submodule (TODO)
+#       - name: Update submodule ${{ github.event.repository.name }}
+#         working-directory: ${{ github.event.repository.name }}
+#         run: |
+#           git fetch --recurse-submodules=no --force ${{ github.event.repository.clone_url }} "+refs/heads/*:refs/remotes/origin/*"
+#           git fetch --recurse-submodules=no --force ${{ github.event.repository.clone_url }} "+refs/pull/*/head:refs/remotes/origin/pr/*"
+#           git checkout ${{ github.sha }} || git checkout ${{ github.event.pull_request.head.sha }}
+
+#       # # attach GCC problem matcher... might not work because of submodules... just trying
+#       # - uses: ammaraskar/gcc-problem-matcher@master
+
+#       # step 3: use our custom action to build the project
+#       - name: Build
+#         id: build
+#         uses: ./.github/actions/phoenix-build
+#         with:
+#           target: ${{ matrix.target }}
+#           syspage: ${{ matrix.syspage }}
+#           params: 'core fs test project image'
+
+#       # step 4: tar rootfs
+#       - name: Tar rootfs
+#         working-directory: _fs
+#         run: tar -cvf ../rootfs-${{ matrix.target }}.tar ${{ matrix.target }}/root
+
+#       # step 5: upload "_boot" directory and tarball of rootfs as build artifacts
+#       - name: Upload build artifacts
+#         uses: actions/upload-artifact@v2
+#         with:
+#           name: phoenix-rtos-${{ matrix.target }}
+#           path: |
+#             _boot
+#             rootfs-${{ matrix.target }}.tar
+
+#   # test-emu:
+#   #   needs: build
+#   #   name: run tests on emulators
+#   #   runs-on: ubuntu-latest
+#   #   outputs:
+#   #     runner_result: ${{ steps.runner.outcome }}
+#   #   strategy:
+#   #     matrix:
+#   #       target: ['ia32-generic-qemu']
+
+#   #   steps:
+#   #     - name: Checkout phoenix-rtos-project
+#   #       run: echo abc
+#   #       uses: actions/checkout@v2
+#   #       with:
+#   #         repository: phoenix-rtos/phoenix-rtos-project
+#   #         submodules: recursive
+
+#   #     - name: Update submodule ${{ github.event.repository.name }}
+#   #       working-directory: ${{ github.event.repository.name }}
+#   #       run: |
+#   #         git fetch --recurse-submodules=no --force ${{ github.event.repository.clone_url }} "+refs/heads/*:refs/remotes/origin/*"
+#   #         git fetch --recurse-submodules=no --force ${{ github.event.repository.clone_url }} "+refs/pull/*/head:refs/remotes/origin/pr/*"
+#   #         git checkout ${{ github.sha }} || git checkout ${{ github.event.pull_request.head.sha }}
+
+#   #     - name: Download build artifacts
+#   #       uses: actions/download-artifact@v2
+#   #       with:
+#   #         name: phoenix-rtos-${{ matrix.target }}
+
+#   #     - name: Untar rootfs
+#   #       working-directory: _fs
+#   #       run: tar -xvf ../rootfs-${{ matrix.target }}.tar
+
+#   #     - name: Test runner
+#   #       id: runner
+#   #       uses: ./.github/actions/phoenix-runner
+#   #       with:
+#   #         target: ${{ matrix.target }}
+
+#   # # runs on self-hosted runners with HW targets attached
+#   # test-hw:
+#   #   needs: build
+#   #   name: run tests on hardware
+#   #   runs-on: ${{ matrix.target }}
+#   #   outputs:
+#   #     runner_result: ${{ steps.runner.outcome }}
+#   #   strategy:
+#   #     matrix:
+#   #       target: ['armv7a9-zynq7000-zedboard']
+
+#   #   steps:
+#   #     - name: Checkout phoenix-rtos-project
+#   #       uses: actions/checkout@v3
+#   #       with:
+#   #         repository: phoenix-rtos/phoenix-rtos-project
+#   #         submodules: recursive
+
+#   #     - name: Update submodule ${{ github.event.repository.name }}
+#   #       working-directory: ${{ github.event.repository.name }}
+#   #       run: |
+#   #         git fetch --recurse-submodules=no --force ${{ github.event.repository.clone_url }} "+refs/heads/*:refs/remotes/origin/*"
+#   #         git fetch --recurse-submodules=no --force ${{ github.event.repository.clone_url }} "+refs/pull/*/head:refs/remotes/origin/pr/*"
+#   #         git checkout ${{ github.sha }} || git checkout ${{ github.event.pull_request.head.sha }}
+
+#   #     - name: Download build artifacts
+#   #       uses: actions/download-artifact@v3
+#   #       with:
+#   #         name: phoenix-rtos-${{ matrix.target }}
+
+#   #     - name: Untar rootfs
+#   #       working-directory: _fs
+#   #       run: tar -xvf ../rootfs-${{ matrix.target }}.tar
+
+#   #     - name: Test runner
+#   #       id: runner
+#   #       run: |
+#   #         python3 ./phoenix-rtos-tests/runner.py -T${{ matrix.target }}
+
+#   # mail-notification:
+#   #   name: notify ci team using e-mail
+#   #   runs-on: ubuntu-latest
+#   #   steps:
+#   #     - name: Send mail
+#   #       # If there is some failure, not caused by build step or test runner step send mail
+#   #       uses: dawidd6/action-send-mail@v3
+#   #       with:
+#   #         server_address: smtp.gmail.com
+#   #         server_port: 465
+#   #         username: ${{ secrets.CI_BOT_EMAIL_USERNAME }}
+#   #         password: ${{ secrets.CI_BOT_EMAIL_PASSWORD }}
+#   #         subject: Github Actions Warning
+#   #         to: ci@phoenix-rtos.com
+#   #         # Required sender full name (address can be skipped):
+#   #         from: Continuous Integration Bot
+#   #         # Optional whether this connection use TLS (default is true if server_port is 465)
+#   #         secure: true
+#   #         body: There is some problem with GH Actions. https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}
+
+#   #       # if: >-
+#   #       #   ${{ needs.build.outputs.build_result != 'failure'
+#   #       #   && needs.test-emu.outputs.runner_result != 'failure'
+#   #       #   && needs.test-hw.outputs.runner_result != 'failure' }}
+#   #       # if: >-
+#   #       #   ${{ needs.build.outputs.build_result != 'failure'
+#   #       #   && needs.test-emu.outputs.runner_result != 'failure'
+#   #       #   && needs.test-hw.outputs.runner_result != 'failure' }}
+
+
+
+
+
+
+
+
+
+
+  # vim:sw=2:ts=2
+# reusable build/test workflow for submodules
+name: ci-submodule
+
 on:
   push:
     branches:
@@ -12,9 +196,146 @@ on:
       - master
       - 'feature/*'
 
+
 jobs:
-  call-ci:
-    uses: phoenix-rtos/phoenix-rtos-project/.github/workflows/ci-submodule.yml@master
-    secrets:
-      CI_BOT_EMAIL_USERNAME: ${{ secrets.CI_BOT_EMAIL_USERNAME }}
-      CI_BOT_EMAIL_PASSWORD: ${{ secrets.CI_BOT_EMAIL_PASSWORD }}
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    outputs:
+      build_result: ${{ steps.build.outcome }}
+    strategy:
+      matrix:
+        target: ['armv7a9-zynq7000-zedboard', 'ia32-generic-qemu']
+        include:
+          - target: 'ia32-generic-qemu'
+            syspage: 'psh pc-ata uart16550'
+          - target: 'armv7a9-zynq7000-qemu'
+            additional_params: 'ports'
+    steps:
+      # step 1 : checkout submodule
+      - name: Checkout submodule
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      # step 2: checkout phoenix-rtos-project repository code in .buildroot and symlink submodule name to `workspace`
+      # that way workspace file paths will match submodule paths - making problem matchers work
+      # BUILD_DIRECTORY - absolute path to phoenix-rtos-project
+      # CI_CUSTOM_BUILDROOT - relative path to phoenix-rtos-project (from GH Actions workspace)
+      - name: Checkout phoenix-rtos-project
+        # we need to use relative paths here so they would work in docker env
+        run: |
+          mkdir .buildroot && cd .buildroot
+          git clone https://github.com/phoenix-rtos/phoenix-rtos-project --recurse-submodules
+          cd phoenix-rtos-project
+          echo "BUILD_DIRECTORY=$(pwd)" >> $GITHUB_ENV
+          echo "CI_CUSTOM_BUILDROOT=.buildroot/phoenix-rtos-project" >> $GITHUB_ENV
+          git log -1 --pretty=oneline
+          git submodule
+          rm -rf ${{ github.event.repository.name }}
+          ln -s ../.. ${{ github.event.repository.name }}
+
+      # attach GCC problem matcher - will pin problems to files only in current submodule
+      - uses: ammaraskar/gcc-problem-matcher@master
+
+      # step 3: use our custom action to build the project
+      - name: Build
+        id: build
+        uses: ./.buildroot/phoenix-rtos-project/.github/actions/phoenix-build    # BUILD_DIRECTORY value, but we can't use templates here
+        with:
+          target: ${{ matrix.target }}
+          syspage: ${{ matrix.syspage }}
+          params: 'core fs test project image'
+          buildroot: ${{env.CI_CUSTOM_BUILDROOT}}
+
+      # step 4: tar rootfs
+      - name: Tar rootfs
+        working-directory: ${{env.BUILD_DIRECTORY}}/_fs
+        run: tar -cvf ../rootfs-${{ matrix.target }}.tar ${{ matrix.target }}/root
+
+      # step 5: upload project boot directory and tarball of rootfs as build artifacts
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: phoenix-rtos-${{ matrix.target }}
+          path: |
+            ${{env.BUILD_DIRECTORY}}/_boot/${{ matrix.target }}
+            ${{env.BUILD_DIRECTORY}}/rootfs-${{ matrix.target }}.tar
+
+  test-emu:
+    needs: build
+    name: run tests on emulators
+    runs-on: ubuntu-latest
+    outputs:
+      runner_result: ${{ steps.runner.outcome }}
+    strategy:
+      matrix:
+        target: ['ia32-generic-qemu']
+
+    steps:
+      - name: Checkout phoenix-rtos-project
+        uses: actions/checkout@v3
+        with:
+          repository: phoenix-rtos/phoenix-rtos-project
+          submodules: recursive
+
+      - name: Update submodule ${{ github.event.repository.name }}
+        working-directory: ${{ github.event.repository.name }}
+        run: |
+          git fetch --recurse-submodules=no --force ${{ github.event.repository.clone_url }} "+refs/heads/*:refs/remotes/origin/*"
+          git fetch --recurse-submodules=no --force ${{ github.event.repository.clone_url }} "+refs/pull/*/head:refs/remotes/origin/pr/*"
+          git checkout ${{ github.sha }} || git checkout ${{ github.event.pull_request.head.sha }}
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: phoenix-rtos-${{ matrix.target }}
+
+      - name: Untar rootfs
+        working-directory: _fs
+        run: tar -xvf ../rootfs-${{ matrix.target }}.tar
+
+      - name: Test runner
+        id: runner
+        uses: ./.github/actions/phoenix-runner
+        with:
+          target: ${{ matrix.target }}
+
+  # runs on self-hosted runners with HW targets attached
+  test-hw:
+    needs: build
+    name: run tests on hardware
+    runs-on: ${{ matrix.target }}
+    outputs:
+      runner_result: ${{ steps.runner.outcome }}
+    strategy:
+      matrix:
+        target: ['armv7a9-zynq7000-zedboard']
+
+    steps:
+      - name: Checkout phoenix-rtos-project
+        uses: actions/checkout@v3
+        with:
+          repository: phoenix-rtos/phoenix-rtos-project
+          submodules: recursive
+
+      - name: Update submodule ${{ github.event.repository.name }}
+        working-directory: ${{ github.event.repository.name }}
+        run: |
+          git fetch --recurse-submodules=no --force ${{ github.event.repository.clone_url }} "+refs/heads/*:refs/remotes/origin/*"
+          git fetch --recurse-submodules=no --force ${{ github.event.repository.clone_url }} "+refs/pull/*/head:refs/remotes/origin/pr/*"
+          git checkout ${{ github.sha }} || git checkout ${{ github.event.pull_request.head.sha }}
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: phoenix-rtos-${{ matrix.target }}
+
+      - name: Untar rootfs
+        working-directory: _fs
+        run: tar -xvf ../rootfs-${{ matrix.target }}.tar
+
+      - name: Test runner
+        id: runner
+        run: |
+          python3 ./phoenix-rtos-tests/runner.py -T${{ matrix.target }}

@@ -23,6 +23,11 @@ def resolve_phrtos_dir() -> Path:
     return Path(*path.parts[:idx+1])
 
 
+def set_current_target(target):
+    global CURRENT_TARGET
+    CURRENT_TARGET = target
+
+
 PHRTOS_PROJECT_DIR = resolve_phrtos_dir()
 PHRTOS_TEST_DIR = PHRTOS_PROJECT_DIR / 'phoenix-rtos-tests'
 
@@ -33,6 +38,7 @@ PYEXPECT_TIMEOUT = 8
 # FIXME: allow for running tests for a given target family (not project only)
 # e.g. run armv7m7-imxrt106x tests for armv7m7-imxrt106x-project
 ALL_TARGETS = ['armv7a9-zynq7000-qemu',
+               'armv7a9-zynq7000-zedboard',
                'armv7m4-stm32l4x6-nucleo',
                'armv7m7-imxrt106x-evk',
                'armv7m7-imxrt117x-evk',
@@ -55,7 +61,8 @@ LONG_TESTS = ['busybox', 'mbedtls', 'micropython_std', 'micropython_repl']
 CURRENT_TARGET = None
 
 # Port to communicate with hardware boards
-DEVICE_SERIAL_PORT = "/dev/serial/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.4:1.1"
+DEVICE_SERIAL_PORT_NXP = '/dev/serial/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.4:1.1'
+DEVICE_SERIAL_PORT_XYLINX = '/dev/serial/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.4:1.0'
 DEVICE_SERIAL_BAUDRATE = 115200
 
 # DEVICE_SERIAL USB port address
@@ -78,7 +85,7 @@ def array_value(array: Dict[str, List[str]]) -> List[str]:
 
 @dataclass
 class ParserArgs:
-    targets: List[str]
+    target: str
     long_test: bool
     yaml_path: Path
     path: Path = field(init=False)
@@ -300,7 +307,7 @@ class ConfigParser:
         if 'harness' in config:
             self.resolve_harness(config, args.path)
         self.resolve_name(config, args.path)
-        self.resolve_targets(config, args.targets)
+        self.resolve_targets(config, [args.target, ])
 
 
 @dataclass

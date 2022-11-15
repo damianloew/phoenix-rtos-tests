@@ -3,19 +3,20 @@
 #
 # ARMV7M7 runner
 #
-# Copyright 2021 Phoenix SYstems
+# Copyright 2021 Phoenix Systems
 # Authors: Jakub Sarzyński, Damian Loewnau
 #
 
-import logging
 import time
 import sys
 import select
 
 from pexpect.exceptions import TIMEOUT, EOF
 from trunner.tools.color import Color
-from .common import LOG_PATH, Psu, Phoenixd, PhoenixdError, PloError, PloTalker, DeviceRunner, Runner
-from .common import GPIO, phd_error_msg, rootfs
+from .common import PloError, PloTalker, DeviceRunner, RebootError
+from .common import GPIO, rootfs
+from .utils import Phoenixd, PhoenixdError, append_output
+from .flasher import NXPSerialFlasher
 
 
 def hostpc_reboot(serial_downloader=False):
@@ -33,21 +34,11 @@ def hostpc_reboot(serial_downloader=False):
         raise RebootError('It took too long to wait for a key pressing')
 
 
-class RebootError(Exception):
-    def __init__(self, message):
-        msg = Color.colorify("REBOOT ERROR:\n", Color.BOLD)
-        msg += str(message) + '\n'
-        super().__init__(msg)
-
-
 class ARMV7M7Runner(DeviceRunner):
     """This class provides interface to run tests on targets with armv7m7 architecture"""
 
-    status_color = {Runner.BUSY: 'blue', Runner.SUCCESS: 'green', Runner.FAIL: 'red'}
-
     # redefined by target runners
     SDP = None
-    IMAGE = None
 
     def __init__(self, target, serial, is_rpi_host=True, log=False):
         # has to be defined before super, because Runner constructor calls set_status, where it's used
@@ -58,14 +49,12 @@ class ARMV7M7Runner(DeviceRunner):
             self.power_gpio = GPIO(2)
             self.power_gpio.high()
             self.boot_gpio = GPIO(4)
-            self.leds = {'red': GPIO(13), 'green': GPIO(18), 'blue': GPIO(12)}
-            self.logpath = LOG_PATH
 
-        super().__init__(target, serial, log)
+        super().__init__(target, serial, is_rpi_host, log)
         # default values, redefined by specified target runners
         self.phoenixd_port = None
         self.is_cut_power_used = False
-        self.flash_memory = 0
+        self.flash_bank = None
 
     def _restart_by_poweroff(self):
         pass
@@ -87,43 +76,30 @@ class ARMV7M7Runner(DeviceRunner):
         else:
             self._restart_by_jtag()
 
-    def reboot(self, serial_downloader=False, cut_power=False):
+    def reboot(self, flashing_mode=False):
         """Reboots a tested device."""
         if self.is_rpi_host:
-            self.rpi_reboot(serial_downloader, cut_power)
+            self.rpi_reboot(serial_downloader=flashing_mode, cut_power=self.is_cut_power_used)
         else:
-            hostpc_reboot(serial_downloader)
+            hostpc_reboot(serial_downloader=flashing_mode)
 
     def flash(self):
-        phd = None
-        try:
-            self.reboot(serial_downloader=True, cut_power=self.is_cut_power_used)
-            with PloTalker(self.serial_port) as plo:
-                if self.logpath:
-                    plo.plo.logfile = open(self.logpath, "a")
-                Psu(self.target, script=self.SDP).run()
-                plo.wait_prompt()
-                with Phoenixd(self.target, self.phoenixd_port) as phd:
-                    plo.copy_file2mem(
-                        src='usb0',
-                        file=self.IMAGE,
-                        dst=f'flash{self.flash_memory}',
-                    )
-            self.reboot(cut_power=self.is_cut_power_used)
-        except (TIMEOUT, EOF, PloError, PhoenixdError, RebootError) as exc:
-            exception = f'{exc}\n'
-            if phd and not isinstance(exc, RebootError):
-                exception = phd_error_msg(exception, phd.output())
+        flasher = NXPSerialFlasher(
+            self.target,
+            self.serial_port,
+            self.phoenixd_port,
+            self.flash_bank,
+            self.logpath
+        )
 
-            logging.info(exception)
-            sys.exit(1)
+        flasher.flash(self.reboot)
 
     def load(self, test):
         """Loads test ELF into syspage using plo"""
         phd = None
         load_dir = str(rootfs(test.target) / 'bin')
         try:
-            self.reboot(cut_power=self.is_cut_power_used)
+            self.reboot()
             with PloTalker(self.serial_port) as plo:
                 if self.logpath:
                     plo.plo.logfile = open(self.logpath, "a")
@@ -144,25 +120,10 @@ class ARMV7M7Runner(DeviceRunner):
                 test.exception = str(exc)
                 test.fail()
                 if phd:
-                    test.exception = phd_error_msg(test.exception, phd.output())
+                    test.exception = append_output('phoenixd', test.exception, phd.output())
             return False
 
         return True
-
-    def set_status(self, status):
-        super().set_status(status)
-        if self.is_rpi_host:
-            if status in self.status_color:
-                self.set_led(self.status_color[status])
-
-    def set_led(self, color):
-        """Turn on the specified RGB LED's color."""
-        if color in self.leds:
-            for led_gpio in self.leds.values():
-                led_gpio.low()
-            self.leds[color].high()
-        else:
-            print(f'There is no specified led color: {color}')
 
     def run(self, test):
         if test.skipped():
