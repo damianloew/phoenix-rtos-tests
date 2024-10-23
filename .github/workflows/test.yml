@@ -1,0 +1,16 @@
+# vim:sw=2:ts=2
+name: test
+
+# on events
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test-job:
+    name: test-job
+    runs-on: test
+    steps:
+      - name: test-step
+        run: echo abc
